@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.1.1]
 
 - Build is now reproducible across machines: the XPI is written by `scripts/build.mjs` with uncompressed entries, fixed order, timestamps and attributes. Builds of 0.1.0 from macOS and Linux differed in their compressed data.
 
