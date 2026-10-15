@@ -1,0 +1,324 @@
+{
+  "extensionName": {
+    "message": "DAV Autosync"
+  },
+  "extensionDescription": {
+    "message": "Keeps CalDAV calendars and CardDAV address books in step with the server: new ones appear, removed ones disappear."
+  },
+  "kindCalendar": {
+    "message": "Calendar"
+  },
+  "kindAddressBook": {
+    "message": "Address book"
+  },
+  "warnListingUnavailable": {
+    "message": "$KIND$: the list from the server is not available, nothing changed.",
+    "placeholders": {
+      "kind": {
+        "content": "$1"
+      }
+    }
+  },
+  "warnServerEmpty": {
+    "message": "$KIND$: the server reports no entries; the $COUNT$ managed ones are kept as a precaution.",
+    "placeholders": {
+      "kind": {
+        "content": "$1"
+      },
+      "count": {
+        "content": "$2"
+      }
+    }
+  },
+  "warnRemovalDeferred": {
+    "message": "$KIND$ “$NAME$” is missing on the server ($COUNT$/$LIMIT$), not removed yet.",
+    "placeholders": {
+      "kind": {
+        "content": "$1"
+      },
+      "name": {
+        "content": "$2"
+      },
+      "count": {
+        "content": "$3"
+      },
+      "limit": {
+        "content": "$4"
+      }
+    }
+  },
+  "davNetwork": {
+    "message": "Server unreachable: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "davAuth": {
+    "message": "Login rejected (HTTP $STATUS$)",
+    "placeholders": {
+      "status": {
+        "content": "$1"
+      }
+    }
+  },
+  "davStatus": {
+    "message": "Unexpected answer from the server (HTTP $STATUS$)",
+    "placeholders": {
+      "status": {
+        "content": "$1"
+      }
+    }
+  },
+  "davNotMultistatus": {
+    "message": "The server's answer is not a WebDAV listing."
+  },
+  "davNoPrincipal": {
+    "message": "The server names no user principal. Is the server URL right?"
+  },
+  "davUnexpected": {
+    "message": "Unexpected error"
+  },
+  "statusNotConfigured": {
+    "message": "Not configured: serverUrl is missing."
+  },
+  "statusNoCredentials": {
+    "message": "No login data. Please enter them in the add-on options."
+  },
+  "statusAuthBlocked": {
+    "message": "The login for $USER$ was rejected. Waiting for a new password.",
+    "placeholders": {
+      "user": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusSummary": {
+    "message": "$CALENDARS$ calendars and $BOOKS$ address books on the server; $DONE$ change(s), $FAILED$ failed.",
+    "placeholders": {
+      "calendars": {
+        "content": "$1"
+      },
+      "books": {
+        "content": "$2"
+      },
+      "done": {
+        "content": "$3"
+      },
+      "failed": {
+        "content": "$4"
+      }
+    }
+  },
+  "statusUnexpected": {
+    "message": "Unexpected error: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "logLoginFromMail": {
+    "message": "Login $USER$ taken from the mail account.",
+    "placeholders": {
+      "user": {
+        "content": "$1"
+      }
+    }
+  },
+  "logLoginFromMailChanged": {
+    "message": "Password for $USER$ taken from the mail account (changed).",
+    "placeholders": {
+      "user": {
+        "content": "$1"
+      }
+    }
+  },
+  "logAuthStopped": {
+    "message": "Login for $USER$ rejected. No further attempts with this password.",
+    "placeholders": {
+      "user": {
+        "content": "$1"
+      }
+    }
+  },
+  "logDiscoveryFailed": {
+    "message": "Listing failed ($TRIGGER$): $DETAIL$",
+    "placeholders": {
+      "trigger": {
+        "content": "$1"
+      },
+      "detail": {
+        "content": "$2"
+      }
+    }
+  },
+  "logActionFailed": {
+    "message": "$ACTION$ failed: $DETAIL$",
+    "placeholders": {
+      "action": {
+        "content": "$1"
+      },
+      "detail": {
+        "content": "$2"
+      }
+    }
+  },
+  "logLoginSaved": {
+    "message": "Login for $USER$ saved.",
+    "placeholders": {
+      "user": {
+        "content": "$1"
+      }
+    }
+  },
+  "logCreated": {
+    "message": "$KIND$ “$NAME$” added",
+    "placeholders": {
+      "kind": {
+        "content": "$1"
+      },
+      "name": {
+        "content": "$2"
+      }
+    }
+  },
+  "logUpdated": {
+    "message": "$KIND$ “$NAME$” updated ($CHANGES$)",
+    "placeholders": {
+      "kind": {
+        "content": "$1"
+      },
+      "name": {
+        "content": "$2"
+      },
+      "changes": {
+        "content": "$3"
+      }
+    }
+  },
+  "logRemoved": {
+    "message": "$KIND$ “$NAME$” removed ($REASON$)",
+    "placeholders": {
+      "kind": {
+        "content": "$1"
+      },
+      "name": {
+        "content": "$2"
+      },
+      "reason": {
+        "content": "$3"
+      }
+    }
+  },
+  "logAdoptedCalendar": {
+    "message": "Calendar “$NAME$” was already subscribed and is now managed",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "logAdoptedAddressBook": {
+    "message": "Address book “$NAME$” was already set up and is now managed",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "changeName": {
+    "message": "name: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "changeColor": {
+    "message": "colour: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "changeReadOnly": {
+    "message": "read-only"
+  },
+  "changeWritable": {
+    "message": "writable"
+  },
+  "changeEnabled": {
+    "message": "switched on again"
+  },
+  "reasonDuplicate": {
+    "message": "duplicate"
+  },
+  "reasonGoneFromServer": {
+    "message": "no longer on the server"
+  },
+  "triggerSchedule": {
+    "message": "schedule"
+  },
+  "triggerManual": {
+    "message": "manual"
+  },
+  "triggerNewLogin": {
+    "message": "new login"
+  },
+  "triggerRequested": {
+    "message": "requested"
+  },
+  "optionsSyncNow": {
+    "message": "Sync now"
+  },
+  "optionsNoRunYet": {
+    "message": "No sync has run yet."
+  },
+  "optionsSourceManaged": {
+    "message": "Configuration: set centrally (policies.json)"
+  },
+  "optionsSourceLocal": {
+    "message": "Configuration: local"
+  },
+  "optionsLoginHeading": {
+    "message": "Login"
+  },
+  "optionsLoginHint": {
+    "message": "Only needed if the login is not taken from the mail account. The password is stored in Thunderbird's password manager."
+  },
+  "optionsUsername": {
+    "message": "User name"
+  },
+  "optionsPassword": {
+    "message": "Password"
+  },
+  "optionsSave": {
+    "message": "Save"
+  },
+  "optionsLogHeading": {
+    "message": "Log"
+  },
+  "optionsConfigHeading": {
+    "message": "Configuration"
+  },
+  "optionsConfigManagedHint": {
+    "message": "Set centrally, cannot be changed here."
+  },
+  "optionsConfigLocalHint": {
+    "message": "Local configuration for testing. In production it comes from policies.json."
+  },
+  "optionsSaveConfig": {
+    "message": "Save configuration"
+  },
+  "optionsInvalidJson": {
+    "message": "Not valid JSON: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  }
+}

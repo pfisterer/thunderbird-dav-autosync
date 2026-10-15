@@ -1,0 +1,214 @@
+[
+  {
+    "namespace": "davAutosync",
+    "description": "Privileged helpers: managed CalDAV calendars, CardDAV address books and stored logins.",
+    "functions": [
+      {
+        "name": "listManaged",
+        "type": "function",
+        "async": true,
+        "description": "Calendars and address books carrying the given tag.",
+        "parameters": [
+          {
+            "name": "tag",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "createCalendar",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "spec",
+            "type": "object",
+            "additionalProperties": {
+              "type": "any"
+            }
+          }
+        ]
+      },
+      {
+        "name": "updateCalendar",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "changes",
+            "type": "object",
+            "additionalProperties": {
+              "type": "any"
+            }
+          }
+        ]
+      },
+      {
+        "name": "removeCalendar",
+        "type": "function",
+        "async": true,
+        "description": "Unsubscribes only; never deletes anything on the server.",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "adoptCalendar",
+        "type": "function",
+        "async": true,
+        "description": "Marks an existing, unmarked CalDAV calendar with the same URL and username as managed. Resolves to its id, or null if there is none.",
+        "parameters": [
+          {
+            "name": "url",
+            "type": "string"
+          },
+          {
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "name": "tag",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "createAddressBook",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "spec",
+            "type": "object",
+            "additionalProperties": {
+              "type": "any"
+            }
+          }
+        ]
+      },
+      {
+        "name": "updateAddressBook",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "uid",
+            "type": "string"
+          },
+          {
+            "name": "changes",
+            "type": "object",
+            "additionalProperties": {
+              "type": "any"
+            }
+          }
+        ]
+      },
+      {
+        "name": "removeAddressBook",
+        "type": "function",
+        "async": true,
+        "description": "Removes the local copy only.",
+        "parameters": [
+          {
+            "name": "uid",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "adoptAddressBook",
+        "type": "function",
+        "async": true,
+        "description": "Marks an existing, unmarked CardDAV address book with the same URL and username as managed. Resolves to its UID, or null.",
+        "parameters": [
+          {
+            "name": "url",
+            "type": "string"
+          },
+          {
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "name": "tag",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "getLogin",
+        "type": "function",
+        "async": true,
+        "description": "Stored HTTP login for origin and realm, optionally for one username. Resolves to null if none.",
+        "parameters": [
+          {
+            "name": "origin",
+            "type": "string"
+          },
+          {
+            "name": "realm",
+            "type": "string"
+          },
+          {
+            "name": "username",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "name": "setLogin",
+        "type": "function",
+        "async": true,
+        "description": "Adds or replaces the stored HTTP login for origin, realm and username.",
+        "parameters": [
+          {
+            "name": "origin",
+            "type": "string"
+          },
+          {
+            "name": "realm",
+            "type": "string"
+          },
+          {
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "getMailLogin",
+        "type": "function",
+        "async": true,
+        "description": "Username and stored password of an incoming mail server (first IMAP/POP account, or the one on the given host). Resolves to null if none.",
+        "parameters": [
+          {
+            "name": "host",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "name": "onSyncRequested",
+        "type": "function",
+        "description": "Fired when the observer topic dav-autosync-sync-now is notified (tests, administrators).",
+        "parameters": []
+      }
+    ]
+  }
+]

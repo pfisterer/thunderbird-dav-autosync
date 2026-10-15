@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Unit and integration tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Start test Nextcloud
+        run: scripts/nc-test.sh start
+      - name: Tests
+        run: |
+          eval "$(scripts/nc-test.sh env)"
+          npm test
+
+  lint:
+    name: Thunderbird review linter
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run lint
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lint-report
+          path: .local/lint-report.txt
+
+  e2e:
+    name: End-to-end (Thunderbird ESR + Nextcloud)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Libraries for headless Thunderbird
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgtk-3-0t64 libdbus-glib-1-2 libasound2t64 libx11-xcb1
+      - name: Thunderbird ESR
+        run: scripts/get-thunderbird.sh
+      - name: Start test Nextcloud
+        run: scripts/nc-test.sh start
+      - name: End-to-end test
+        run: npm run e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-thunderbird-log
+          path: .local/e2e-thunderbird.log

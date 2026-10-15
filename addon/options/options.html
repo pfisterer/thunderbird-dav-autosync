@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="extensionName"></title>
+  <style>
+    body { font: 14px/1.45 system-ui, sans-serif; max-width: 860px; margin: 24px auto; padding: 0 16px; }
+    h1 { font-size: 20px; } h2 { font-size: 16px; margin-top: 28px; }
+    .status { padding: 10px 12px; border-radius: 6px; background: #eef5ee; }
+    .status.bad { background: #fbeaea; }
+    table { border-collapse: collapse; width: 100%; font-size: 13px; }
+    td { padding: 3px 8px 3px 0; vertical-align: top; border-bottom: 1px solid #ddd; }
+    td.warn { color: #8a5a00; } td.error { color: #b00020; }
+    textarea { width: 100%; height: 220px; font: 12px ui-monospace, monospace; }
+    input { padding: 4px 6px; } button { padding: 5px 12px; }
+    .muted { color: #666; }
+  </style>
+</head>
+<body>
+  <h1 data-i18n="extensionName"></h1>
+  <div id="status" class="status"></div>
+  <p><button id="sync" data-i18n="optionsSyncNow"></button> <span class="muted" id="source"></span></p>
+
+  <h2 data-i18n="optionsLoginHeading"></h2>
+  <p class="muted" data-i18n="optionsLoginHint"></p>
+  <form id="login"><input id="user" data-i18n-placeholder="optionsUsername" autocomplete="username"> <input id="pw" type="password" data-i18n-placeholder="optionsPassword" autocomplete="current-password"> <button data-i18n="optionsSave"></button></form>
+
+  <h2 data-i18n="optionsLogHeading"></h2>
+  <table id="log"></table>
+
+  <h2 data-i18n="optionsConfigHeading"></h2>
+  <p class="muted" id="cfghint"></p>
+  <textarea id="cfg" spellcheck="false"></textarea>
+  <p><button id="savecfg" data-i18n="optionsSaveConfig"></button></p>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

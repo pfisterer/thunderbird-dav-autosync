@@ -1,0 +1,324 @@
+{
+  "extensionName": {
+    "message": "DAV Autosync"
+  },
+  "extensionDescription": {
+    "message": "Hält CalDAV-Kalender und CardDAV-Adressbücher mit dem Server abgeglichen: neue erscheinen, entfernte verschwinden."
+  },
+  "kindCalendar": {
+    "message": "Kalender"
+  },
+  "kindAddressBook": {
+    "message": "Adressbuch"
+  },
+  "warnListingUnavailable": {
+    "message": "$KIND$: Liste vom Server nicht verfügbar, keine Änderungen.",
+    "placeholders": {
+      "kind": {
+        "content": "$1"
+      }
+    }
+  },
+  "warnServerEmpty": {
+    "message": "$KIND$: Server meldet keine Einträge, die $COUNT$ verwalteten bleiben vorsichtshalber erhalten.",
+    "placeholders": {
+      "kind": {
+        "content": "$1"
+      },
+      "count": {
+        "content": "$2"
+      }
+    }
+  },
+  "warnRemovalDeferred": {
+    "message": "$KIND$ „$NAME$“ fehlt auf dem Server ($COUNT$/$LIMIT$), wird noch nicht entfernt.",
+    "placeholders": {
+      "kind": {
+        "content": "$1"
+      },
+      "name": {
+        "content": "$2"
+      },
+      "count": {
+        "content": "$3"
+      },
+      "limit": {
+        "content": "$4"
+      }
+    }
+  },
+  "davNetwork": {
+    "message": "Server nicht erreichbar: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "davAuth": {
+    "message": "Anmeldung abgelehnt (HTTP $STATUS$)",
+    "placeholders": {
+      "status": {
+        "content": "$1"
+      }
+    }
+  },
+  "davStatus": {
+    "message": "Unerwartete Antwort vom Server (HTTP $STATUS$)",
+    "placeholders": {
+      "status": {
+        "content": "$1"
+      }
+    }
+  },
+  "davNotMultistatus": {
+    "message": "Die Antwort des Servers ist keine WebDAV-Liste."
+  },
+  "davNoPrincipal": {
+    "message": "Der Server nennt keinen Benutzer-Principal. Stimmt die Serveradresse?"
+  },
+  "davUnexpected": {
+    "message": "Unerwarteter Fehler"
+  },
+  "statusNotConfigured": {
+    "message": "Nicht konfiguriert: serverUrl fehlt."
+  },
+  "statusNoCredentials": {
+    "message": "Keine Anmeldedaten. Bitte in den Add-on-Einstellungen eintragen."
+  },
+  "statusAuthBlocked": {
+    "message": "Die Anmeldung für $USER$ wurde abgelehnt. Warte auf ein neues Kennwort.",
+    "placeholders": {
+      "user": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusSummary": {
+    "message": "$CALENDARS$ Kalender und $BOOKS$ Adressbücher auf dem Server; $DONE$ Änderung(en), $FAILED$ fehlgeschlagen.",
+    "placeholders": {
+      "calendars": {
+        "content": "$1"
+      },
+      "books": {
+        "content": "$2"
+      },
+      "done": {
+        "content": "$3"
+      },
+      "failed": {
+        "content": "$4"
+      }
+    }
+  },
+  "statusUnexpected": {
+    "message": "Unerwarteter Fehler: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "logLoginFromMail": {
+    "message": "Anmeldung $USER$ vom Mailkonto übernommen.",
+    "placeholders": {
+      "user": {
+        "content": "$1"
+      }
+    }
+  },
+  "logLoginFromMailChanged": {
+    "message": "Kennwort für $USER$ vom Mailkonto übernommen (geändert).",
+    "placeholders": {
+      "user": {
+        "content": "$1"
+      }
+    }
+  },
+  "logAuthStopped": {
+    "message": "Anmeldung für $USER$ abgelehnt. Kein weiterer Versuch mit diesem Kennwort.",
+    "placeholders": {
+      "user": {
+        "content": "$1"
+      }
+    }
+  },
+  "logDiscoveryFailed": {
+    "message": "Abfrage fehlgeschlagen ($TRIGGER$): $DETAIL$",
+    "placeholders": {
+      "trigger": {
+        "content": "$1"
+      },
+      "detail": {
+        "content": "$2"
+      }
+    }
+  },
+  "logActionFailed": {
+    "message": "$ACTION$ fehlgeschlagen: $DETAIL$",
+    "placeholders": {
+      "action": {
+        "content": "$1"
+      },
+      "detail": {
+        "content": "$2"
+      }
+    }
+  },
+  "logLoginSaved": {
+    "message": "Anmeldung für $USER$ gespeichert.",
+    "placeholders": {
+      "user": {
+        "content": "$1"
+      }
+    }
+  },
+  "logCreated": {
+    "message": "$KIND$ „$NAME$“ hinzugefügt",
+    "placeholders": {
+      "kind": {
+        "content": "$1"
+      },
+      "name": {
+        "content": "$2"
+      }
+    }
+  },
+  "logUpdated": {
+    "message": "$KIND$ „$NAME$“ aktualisiert ($CHANGES$)",
+    "placeholders": {
+      "kind": {
+        "content": "$1"
+      },
+      "name": {
+        "content": "$2"
+      },
+      "changes": {
+        "content": "$3"
+      }
+    }
+  },
+  "logRemoved": {
+    "message": "$KIND$ „$NAME$“ entfernt ($REASON$)",
+    "placeholders": {
+      "kind": {
+        "content": "$1"
+      },
+      "name": {
+        "content": "$2"
+      },
+      "reason": {
+        "content": "$3"
+      }
+    }
+  },
+  "logAdoptedCalendar": {
+    "message": "Kalender „$NAME$“ war schon abonniert und wird jetzt verwaltet",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "logAdoptedAddressBook": {
+    "message": "Adressbuch „$NAME$“ war schon eingerichtet und wird jetzt verwaltet",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "changeName": {
+    "message": "Name: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "changeColor": {
+    "message": "Farbe: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "changeReadOnly": {
+    "message": "nur lesen"
+  },
+  "changeWritable": {
+    "message": "schreibbar"
+  },
+  "changeEnabled": {
+    "message": "wieder eingeschaltet"
+  },
+  "reasonDuplicate": {
+    "message": "Duplikat"
+  },
+  "reasonGoneFromServer": {
+    "message": "auf dem Server nicht mehr vorhanden"
+  },
+  "triggerSchedule": {
+    "message": "Zeitplan"
+  },
+  "triggerManual": {
+    "message": "manuell"
+  },
+  "triggerNewLogin": {
+    "message": "neue Anmeldung"
+  },
+  "triggerRequested": {
+    "message": "angefordert"
+  },
+  "optionsSyncNow": {
+    "message": "Jetzt abgleichen"
+  },
+  "optionsNoRunYet": {
+    "message": "Noch kein Abgleich gelaufen."
+  },
+  "optionsSourceManaged": {
+    "message": "Konfiguration: zentral vorgegeben (policies.json)"
+  },
+  "optionsSourceLocal": {
+    "message": "Konfiguration: lokal"
+  },
+  "optionsLoginHeading": {
+    "message": "Anmeldung"
+  },
+  "optionsLoginHint": {
+    "message": "Nur nötig, wenn die Anmeldung nicht vom Mailkonto übernommen wird. Das Kennwort landet in Thunderbirds Kennwortspeicher."
+  },
+  "optionsUsername": {
+    "message": "Benutzername"
+  },
+  "optionsPassword": {
+    "message": "Kennwort"
+  },
+  "optionsSave": {
+    "message": "Speichern"
+  },
+  "optionsLogHeading": {
+    "message": "Protokoll"
+  },
+  "optionsConfigHeading": {
+    "message": "Konfiguration"
+  },
+  "optionsConfigManagedHint": {
+    "message": "Zentral vorgegeben, hier nicht änderbar."
+  },
+  "optionsConfigLocalHint": {
+    "message": "Lokale Konfiguration zum Testen. Im Betrieb kommt sie aus der policies.json."
+  },
+  "optionsSaveConfig": {
+    "message": "Konfiguration speichern"
+  },
+  "optionsInvalidJson": {
+    "message": "Kein gültiges JSON: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  }
+}

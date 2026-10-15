@@ -1,0 +1,48 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_extensionName__",
+  "description": "__MSG_extensionDescription__",
+  "version": "0.1.0",
+  "author": "Dennis Pfisterer",
+  "homepage_url": "https://github.com/pfisterer/thunderbird-dav-autosync",
+  "default_locale": "en",
+  "icons": {
+    "32": "icons/icon.svg",
+    "64": "icons/icon.svg"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "dav-autosync@e0bef3fb-e03d-4a07-90cb-afbe6f17613e",
+      "strict_min_version": "140.0",
+      "strict_max_version": "153.*"
+    }
+  },
+  "permissions": [
+    "storage",
+    "alarms",
+    "<all_urls>"
+  ],
+  "background": {
+    "page": "background.html"
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "experiment_apis": {
+    "davAutosync": {
+      "schema": "api/schema.json",
+      "parent": {
+        "scopes": [
+          "addon_parent"
+        ],
+        "paths": [
+          [
+            "davAutosync"
+          ]
+        ],
+        "script": "api/implementation.js"
+      }
+    }
+  }
+}

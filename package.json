@@ -1,0 +1,25 @@
+{
+  "name": "dav-autosync",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Thunderbird add-on that keeps CalDAV calendars and CardDAV address books in sync with what the server offers",
+  "scripts": {
+    "test": "node --test test/",
+    "build": "sh scripts/build.sh",
+    "e2e": "sh scripts/build.sh && node test/e2e/run.mjs",
+    "release": "sh scripts/build.sh && node scripts/updates-json.mjs",
+    "lint": "sh scripts/lint.sh"
+  },
+  "devDependencies": {
+    "@xmldom/xmldom": "^0.9.0"
+  },
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pfisterer/thunderbird-dav-autosync.git"
+  }
+}
