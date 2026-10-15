@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Thunderbird add-on that keeps CalDAV calendars and CardDAV address books in sync with what the server offers",
   "scripts": {
-    "test": "node --test test/",
+    "test": "node --test \"test/*.test.js\"",
     "build": "sh scripts/build.sh",
     "e2e": "sh scripts/build.sh && node test/e2e/run.mjs",
     "release": "sh scripts/build.sh && node scripts/updates-json.mjs",
