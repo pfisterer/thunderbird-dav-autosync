@@ -148,7 +148,7 @@ async function sync(trigger) {
     }
 
     await browser.storage.local.set({
-      syncState: { missing: result.state.missing, realm: login.realm, username: login.username, authFailed: null },
+      syncState: { missing: result.state.missing, remindersApplied: result.state.remindersApplied, realm: login.realm, username: login.username, authFailed: null },
     });
     const summary = msg("statusSummary", String((remote.calendars || []).length), String((remote.addressBooks || []).length), String(done), String(failed));
     await setStatus({ ok: failed === 0, message: summary, source });
@@ -170,11 +170,11 @@ async function execute(action, { tag, login, config }) {
       const i = action.item;
       const adopted = await api.adoptCalendar(i.url, login.username, tag);
       if (adopted) {
-        await api.updateCalendar(adopted, { name: i.name, color: i.color, readOnly: i.readOnly });
+        await api.updateCalendar(adopted, { name: i.name, color: i.color, readOnly: i.readOnly, ...(action.suppressAlarms ? { suppressAlarms: true } : {}) });
         await log("info", msg("logAdoptedCalendar", i.name));
         return;
       }
-      await api.createCalendar({ url: i.url, name: i.name, color: i.color, readOnly: i.readOnly, username: login.username, tag, cache: config.cache, refreshMinutes: config.calendarRefreshMinutes });
+      await api.createCalendar({ url: i.url, name: i.name, color: i.color, readOnly: i.readOnly, username: login.username, tag, cache: config.cache, refreshMinutes: config.calendarRefreshMinutes, suppressAlarms: Boolean(action.suppressAlarms) });
     } else if (action.op === "update") {
       await api.updateCalendar(action.id, action.changes);
     } else if (action.op === "remove") {
@@ -220,6 +220,8 @@ function describeChange(key, value) {
       return msg(value ? "changeReadOnly" : "changeWritable");
     case "enabled":
       return msg("changeEnabled");
+    case "suppressAlarms":
+      return msg(value ? "changeRemindersOff" : "changeRemindersOn");
     default:
       return `${key}: ${value}`;
   }

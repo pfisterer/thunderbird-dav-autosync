@@ -113,3 +113,25 @@ test("leaves a calendar the user disabled alone", () => {
   const r = plan({ remote: { calendars: [cal("personal")], addressBooks: [] }, local: { calendars: [localCal("1", "personal", { disabled: true, autoDisabled: false })], addressBooks: [] } });
   assert.deepEqual(r.actions, []);
 });
+
+test("reminders off for shared calendars: on creation and once for existing ones", () => {
+  const options = { calendars: { remindersForShared: false } };
+  const remote = { calendars: [cal("personal"), cal("urlaub_shared_by_bob", { shared: true }), cal("neu_shared_by_bob", { shared: true })], addressBooks: [] };
+  const local = { calendars: [localCal("1", "personal"), localCal("2", "urlaub_shared_by_bob")], addressBooks: [] };
+  const first = plan({ remote, local, options });
+  const create = first.actions.find(a => a.op === "create");
+  assert.equal(create.item.slug, "neu_shared_by_bob");
+  assert.equal(create.suppressAlarms, true);
+  const update = first.actions.find(a => a.op === "update");
+  assert.deepEqual([update.id, update.changes], ["2", { suppressAlarms: true }]);
+  assert.ok(!first.actions.some(a => a.id === "1"), "own calendar must not be touched");
+  // Next run: the user switched reminders on again for "urlaub" – nothing is changed any more.
+  const local2 = { calendars: [...local.calendars, localCal("3", "neu_shared_by_bob")], addressBooks: [] };
+  const second = plan({ remote, local: local2, state: first.state, options });
+  assert.deepEqual(second.actions, []);
+});
+
+test("reminders are left alone by default", () => {
+  const r = plan({ remote: { calendars: [cal("x", { shared: true })], addressBooks: [] }, local: { calendars: [], addressBooks: [] } });
+  assert.equal(r.actions[0].suppressAlarms, undefined);
+});

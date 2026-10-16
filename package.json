@@ -1,6 +1,6 @@
 {
   "name": "dav-autosync",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Thunderbird add-on that keeps CalDAV calendars and CardDAV address books in sync with what the server offers",

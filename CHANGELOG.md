@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.2.0]
+
+- New option `calendars.remindersForShared`: with `false`, calendars shared by others get "Show reminders" switched off, once per calendar, also for calendars added before the setting. Users can switch reminders on again; the add-on keeps their choice.
+
 ## [0.1.2]
 
 - Fix: taking the login from the mail account (`credentialSource: "mail"`) never found the mail server on Thunderbird 153, because `nsIMsgIncomingServer.hostName` is now `hostname`.

@@ -5,7 +5,9 @@ import { normalizeUrl } from "./dav.js";
 import { msg, kindMsg } from "./i18n.js";
 
 export const DEFAULT_OPTIONS = {
-  calendars: { enabled: true, includeShared: true, exclude: [], components: ["VEVENT", "VTODO"] },
+  // remindersForShared: false switches off reminders for calendars shared by others, once per calendar (when it is added,
+  // or for calendars added earlier on the first run with the setting). Users can switch them on again; that is kept.
+  calendars: { enabled: true, includeShared: true, exclude: [], components: ["VEVENT", "VTODO"], remindersForShared: true },
   addressBooks: { enabled: true, includeShared: true, exclude: [] },
   // A managed item is removed only after it was missing from this many consecutive successful listings.
   removeAfterMissing: 2,
@@ -15,13 +17,14 @@ export const DEFAULT_OPTIONS = {
  * @param {object} input
  * @param {{calendars: object[]|null, addressBooks: object[]|null}} input.remote - discovery result; null = listing failed, do not touch
  * @param {{calendars: object[], addressBooks: object[]}} input.local - items this add-on manages (calendars: {id,url,name,color,readOnly,disabled,autoDisabled}; address books: {uid,url,name,readOnly})
- * @param {{missing?: Object<string, number>}} [input.state] - persisted between runs
+ * @param {{missing?: Object<string, number>, remindersApplied?: Object<string, boolean>}} [input.state] - persisted between runs
  * @param {object} [input.options]
- * @returns {{actions: object[], state: {missing: Object<string, number>}, warnings: {code: string, params: any[]}[]}}
+ * @returns {{actions: object[], state: {missing: Object<string, number>, remindersApplied: Object<string, boolean>}, warnings: {code: string, params: any[]}[]}}
  */
 export function plan({ remote, local, state = {}, options = {} }) {
   const opts = mergeOptions(options);
   const missing = { ...(state.missing || {}) };
+  const remindersApplied = { ...(state.remindersApplied || {}) };
   const actions = [];
   const warnings = [];
 
@@ -68,6 +71,10 @@ export function plan({ remote, local, state = {}, options = {} }) {
       if (remoteItem) {
         delete missing[k];
         const changes = diff(item, remoteItem, kind);
+        if (kind === "calendar" && remindersOff(remoteItem, kindOpts) && !remindersApplied[k]) {
+          changes.suppressAlarms = true;
+          remindersApplied[k] = true;
+        }
         if (Object.keys(changes).length) {
           actions.push({ op: "update", kind, [idField]: item[idField], url: item.url, name: item.name, changes });
         }
@@ -93,7 +100,12 @@ export function plan({ remote, local, state = {}, options = {} }) {
 
     for (const [k, remoteItem] of wanted) {
       if (!localByUrl.has(k)) {
-        actions.push({ op: "create", kind, item: remoteItem });
+        const action = { op: "create", kind, item: remoteItem };
+        if (kind === "calendar" && remindersOff(remoteItem, kindOpts)) {
+          action.suppressAlarms = true;
+          remindersApplied[k] = true;
+        }
+        actions.push(action);
       }
     }
   }
@@ -105,8 +117,18 @@ export function plan({ remote, local, state = {}, options = {} }) {
       delete missing[k];
     }
   }
+  const wantedNow = new Set((remote?.calendars || []).map(i => normalizeUrl(i.url)));
+  for (const k of Object.keys(remindersApplied)) {
+    if (!managedUrls.has(k) && !wantedNow.has(k)) {
+      delete remindersApplied[k];
+    }
+  }
 
-  return { actions, state: { missing }, warnings };
+  return { actions, state: { missing, remindersApplied }, warnings };
+}
+
+function remindersOff(item, kindOpts) {
+  return kindOpts.remindersForShared === false && Boolean(item.shared);
 }
 
 function accept(item, kindOpts) {

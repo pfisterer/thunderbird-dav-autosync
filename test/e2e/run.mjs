@@ -77,7 +77,7 @@ async function resetServer() {
 }
 
 // ---------- Thunderbird helpers ----------
-function writePolicies(credentialSource = "stored") {
+function writePolicies(credentialSource = "stored", calendarOptions = {}) {
   mkdirSync(DISTRIBUTION, { recursive: true });
   const base = { policies: { DisableAppUpdate: true, DisableTelemetry: true, OverrideFirstRunPage: "", OverridePostUpdatePage: "" } };
   base.policies.ExtensionSettings = { [ADDON_ID]: { installation_mode: "force_installed", install_url: `file://${XPI}` } };
@@ -87,7 +87,7 @@ function writePolicies(credentialSource = "stored") {
         serverUrl: `${DAV}/`,
         credentialSource,
         removeAfterMissing: 2,
-        calendars: { exclude: ["contact_birthdays"] },
+        calendars: { exclude: ["contact_birthdays"], ...calendarOptions },
         addressBooks: { exclude: ["z-*-generated--*"] },
       },
     },
@@ -137,7 +137,7 @@ const SNAPSHOT = `
   const addon = await AddonManager.getAddonByID(args.id);
   return {
     addon: addon ? { version: addon.version, active: addon.isActive } : null,
-    calendars: cal.manager.getCalendars().map(c => ({ id: c.id, name: c.name, type: c.type, readOnly: Boolean(c.readOnly), disabled: Boolean(c.getProperty("disabled")), cache: Boolean(c.getProperty("cache.enabled")), managed: c.getProperty("davautosync.managedBy") || "", username: c.getProperty("username") || "" })),
+    calendars: cal.manager.getCalendars().map(c => ({ id: c.id, name: c.name, type: c.type, readOnly: Boolean(c.readOnly), suppressAlarms: Boolean(c.getProperty("suppressAlarms")), disabled: Boolean(c.getProperty("disabled")), cache: Boolean(c.getProperty("cache.enabled")), managed: c.getProperty("davautosync.managedBy") || "", username: c.getProperty("username") || "" })),
     books: MailServices.ab.directories.map(d => ({ name: d.dirName, carddav: d.dirType == Ci.nsIAbManager.CARDDAV_DIRECTORY_TYPE, readOnly: d.getBoolValue("readOnly", false), managed: d.getStringValue("davautosync.managedBy", ""), cards: d.childCardCount })),
   };`;
 
@@ -300,6 +300,24 @@ await step("Login vom Mailkonto übernommen, veraltetes DAV-Kennwort ersetzt, Ab
   assert.equal(davPw, pw("alice"), "DAV-Kennwort nicht vom Mailkonto übernommen");
   const s = await snapshot(tb.m);
   assert.ok(managedCals(s).length >= 5, "nach Übernahme kein Abgleich");
+});
+await stopThunderbird(tb);
+
+// Erinnerungen für geteilte Kalender nachträglich abschalten (einmalig je Kalender)
+writePolicies("mail", { remindersForShared: false });
+tb = await startThunderbird();
+await step("Erinnerungen: geteilte Kalender aus, eigene an; vom Nutzer wieder eingeschaltet bleibt an", async () => {
+  await requestSync();
+  let s = await waitFor(tb.m, s => byName(s, /^Montagetermine/)?.suppressAlarms, "Erinnerungen aus");
+  assert.equal(byName(s, /^Neue Baustelle/)?.suppressAlarms, true);
+  assert.equal(byName(s, /^(Personal|Persönlich)$/).suppressAlarms, false, "eigener Kalender verändert");
+  assert.equal(byName(s, /^Aufgaben$/).suppressAlarms, false, "eigener Kalender verändert");
+  const montage = byName(s, /^Montagetermine/);
+  await tb.m.run(`const { cal } = ChromeUtils.importESModule("resource:///modules/calendar/calUtils.sys.mjs"); cal.manager.getCalendarById(args.id).setProperty("suppressAlarms", false);`, { id: montage.id });
+  await requestSync();
+  await new Promise(r => setTimeout(r, 5000));
+  s = await snapshot(tb.m);
+  assert.equal(byName(s, /^Montagetermine/).suppressAlarms, false, "Nutzereinstellung überschrieben");
 });
 await stopThunderbird(tb);
 

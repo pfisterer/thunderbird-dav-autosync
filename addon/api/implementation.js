@@ -88,6 +88,10 @@ this.davAutosync = class extends ExtensionCommon.ExtensionAPI {
             calendar.setProperty("refreshInterval", String(spec.refreshMinutes));
           }
           calendar.readOnly = Boolean(spec.readOnly);
+          if (spec.suppressAlarms) {
+            // Same property as "Show reminders" in the calendar properties dialog.
+            calendar.setProperty("suppressAlarms", true);
+          }
           calendar.setProperty(TAG_PROP, spec.tag);
           calendar.setProperty(URL_PROP, spec.url);
           calendar.id = cal.getUUID();
@@ -108,6 +112,9 @@ this.davAutosync = class extends ExtensionCommon.ExtensionAPI {
           }
           if ("readOnly" in changes) {
             calendar.readOnly = Boolean(changes.readOnly);
+          }
+          if ("suppressAlarms" in changes) {
+            calendar.setProperty("suppressAlarms", Boolean(changes.suppressAlarms));
           }
           if (changes.enabled) {
             // Same as Thunderbird's calendar properties dialog.

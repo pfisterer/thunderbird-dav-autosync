@@ -320,5 +320,11 @@
         "content": "$1"
       }
     }
+  },
+  "changeRemindersOff": {
+    "message": "reminders off"
+  },
+  "changeRemindersOn": {
+    "message": "reminders on"
   }
 }
