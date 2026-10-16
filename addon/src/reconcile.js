@@ -7,8 +7,9 @@ import { msg, kindMsg } from "./i18n.js";
 export const DEFAULT_OPTIONS = {
   // remindersForShared: false switches off reminders for calendars shared by others, once per calendar (when it is added,
   // or for calendars added earlier on the first run with the setting). Users can switch them on again; that is kept.
-  calendars: { enabled: true, includeShared: true, exclude: [], components: ["VEVENT", "VTODO"], remindersForShared: true },
-  addressBooks: { enabled: true, includeShared: true, exclude: [] },
+  // refreshMinutes / syncMinutes: polling interval for managed items; also applied to items created earlier.
+  calendars: { enabled: true, includeShared: true, exclude: [], components: ["VEVENT", "VTODO"], remindersForShared: true, refreshMinutes: null },
+  addressBooks: { enabled: true, includeShared: true, exclude: [], syncMinutes: null },
   // A managed item is removed only after it was missing from this many consecutive successful listings.
   removeAfterMissing: 2,
 };
@@ -70,7 +71,7 @@ export function plan({ remote, local, state = {}, options = {} }) {
       const remoteItem = wanted.get(k);
       if (remoteItem) {
         delete missing[k];
-        const changes = diff(item, remoteItem, kind);
+        const changes = diff(item, remoteItem, kind, kindOpts);
         if (kind === "calendar" && remindersOff(remoteItem, kindOpts) && !remindersApplied[k]) {
           changes.suppressAlarms = true;
           remindersApplied[k] = true;
@@ -146,8 +147,13 @@ function accept(item, kindOpts) {
   return true;
 }
 
-function diff(localItem, remoteItem, kind) {
+function diff(localItem, remoteItem, kind, kindOpts = {}) {
   const changes = {};
+  const want = kind === "calendar" ? kindOpts.refreshMinutes : kindOpts.syncMinutes;
+  const have = kind === "calendar" ? localItem.refreshMinutes : localItem.syncMinutes;
+  if (want && Number(have) !== Number(want)) {
+    changes[kind === "calendar" ? "refreshMinutes" : "syncMinutes"] = Number(want);
+  }
   if (remoteItem.name && remoteItem.name !== localItem.name) {
     changes.name = remoteItem.name;
   }

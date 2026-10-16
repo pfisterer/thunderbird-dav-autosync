@@ -326,5 +326,13 @@
   },
   "changeRemindersOn": {
     "message": "Erinnerungen an"
+  },
+  "changeInterval": {
+    "message": "Abgleich alle $MINUTES$ Min.",
+    "placeholders": {
+      "minutes": {
+        "content": "$1"
+      }
+    }
   }
 }

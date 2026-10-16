@@ -326,5 +326,13 @@
   },
   "changeRemindersOn": {
     "message": "reminders on"
+  },
+  "changeInterval": {
+    "message": "sync every $MINUTES$ min",
+    "placeholders": {
+      "minutes": {
+        "content": "$1"
+      }
+    }
   }
 }

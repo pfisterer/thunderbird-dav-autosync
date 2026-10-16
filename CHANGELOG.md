@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.3.0]
+
+- `calendarRefreshMinutes` and `addressBookSyncMinutes` are now applied to managed calendars and address books created earlier as well, not only when they are added. Thunderbird re-arms its refresh timers immediately.
+- Default for both is now 15 minutes (was 30).
+- Taking over an existing subscription also sets the polling interval.
+
 ## [0.2.0]
 
 - New option `calendars.remindersForShared`: with `false`, calendars shared by others get "Show reminders" switched off, once per calendar, also for calendars added before the setting. Users can switch reminders on again; the add-on keeps their choice.

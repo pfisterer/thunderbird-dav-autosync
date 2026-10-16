@@ -77,7 +77,7 @@ async function resetServer() {
 }
 
 // ---------- Thunderbird helpers ----------
-function writePolicies(credentialSource = "stored", calendarOptions = {}) {
+function writePolicies(credentialSource = "stored", calendarOptions = {}, extra = {}) {
   mkdirSync(DISTRIBUTION, { recursive: true });
   const base = { policies: { DisableAppUpdate: true, DisableTelemetry: true, OverrideFirstRunPage: "", OverridePostUpdatePage: "" } };
   base.policies.ExtensionSettings = { [ADDON_ID]: { installation_mode: "force_installed", install_url: `file://${XPI}` } };
@@ -88,6 +88,7 @@ function writePolicies(credentialSource = "stored", calendarOptions = {}) {
         credentialSource,
         removeAfterMissing: 2,
         calendars: { exclude: ["contact_birthdays"], ...calendarOptions },
+        ...extra,
         addressBooks: { exclude: ["z-*-generated--*"] },
       },
     },
@@ -137,8 +138,8 @@ const SNAPSHOT = `
   const addon = await AddonManager.getAddonByID(args.id);
   return {
     addon: addon ? { version: addon.version, active: addon.isActive } : null,
-    calendars: cal.manager.getCalendars().map(c => ({ id: c.id, name: c.name, type: c.type, readOnly: Boolean(c.readOnly), suppressAlarms: Boolean(c.getProperty("suppressAlarms")), disabled: Boolean(c.getProperty("disabled")), cache: Boolean(c.getProperty("cache.enabled")), managed: c.getProperty("davautosync.managedBy") || "", username: c.getProperty("username") || "" })),
-    books: MailServices.ab.directories.map(d => ({ name: d.dirName, carddav: d.dirType == Ci.nsIAbManager.CARDDAV_DIRECTORY_TYPE, readOnly: d.getBoolValue("readOnly", false), managed: d.getStringValue("davautosync.managedBy", ""), cards: d.childCardCount })),
+    calendars: cal.manager.getCalendars().map(c => ({ id: c.id, name: c.name, type: c.type, readOnly: Boolean(c.readOnly), suppressAlarms: Boolean(c.getProperty("suppressAlarms")), refresh: Number(c.getProperty("refreshInterval")), disabled: Boolean(c.getProperty("disabled")), cache: Boolean(c.getProperty("cache.enabled")), managed: c.getProperty("davautosync.managedBy") || "", username: c.getProperty("username") || "" })),
+    books: MailServices.ab.directories.map(d => ({ name: d.dirName, carddav: d.dirType == Ci.nsIAbManager.CARDDAV_DIRECTORY_TYPE, readOnly: d.getBoolValue("readOnly", false), managed: d.getStringValue("davautosync.managedBy", ""), cards: d.childCardCount, sync: d.getIntValue("carddav.syncinterval", 0) })),
   };`;
 
 async function snapshot(m) {
@@ -214,6 +215,8 @@ await step("Erster Abgleich: eigene und geteilte Kalender und Adressbücher ersc
   assert.equal(s.books.find(b => b.name === "Lieferanten (Bob)").readOnly, true);
   assert.ok(s.calendars.every(c => !c.managed || c.username === "alice"));
   assert.ok(s.calendars.some(c => c.name === "Mein eigener Kalender" && !c.managed));
+  assert.ok(s.calendars.filter(c => c.managed).every(c => c.refresh === 15), "Kalender-Takt nicht 15: " + JSON.stringify(s.calendars.filter(c => c.managed).map(c => [c.name, c.refresh])));
+  assert.ok(s.books.filter(b => b.managed).every(b => b.sync === 15), "Adressbuch-Takt nicht 15");
 });
 await stopThunderbird(tb);
 
@@ -303,10 +306,10 @@ await step("Login vom Mailkonto übernommen, veraltetes DAV-Kennwort ersetzt, Ab
 });
 await stopThunderbird(tb);
 
-// Erinnerungen für geteilte Kalender nachträglich abschalten (einmalig je Kalender)
-writePolicies("mail", { remindersForShared: false });
+// Erinnerungen für geteilte Kalender nachträglich abschalten (einmalig je Kalender); Takt zentral auf 5 Minuten
+writePolicies("mail", { remindersForShared: false }, { calendarRefreshMinutes: 5, addressBookSyncMinutes: 5 });
 tb = await startThunderbird();
-await step("Erinnerungen: geteilte Kalender aus, eigene an; vom Nutzer wieder eingeschaltet bleibt an", async () => {
+await step("Erinnerungen geteilt aus/eigen an, Nutzerwahl bleibt; geänderter Takt bei vorhandenen nachgezogen", async () => {
   await requestSync();
   let s = await waitFor(tb.m, s => byName(s, /^Montagetermine/)?.suppressAlarms, "Erinnerungen aus");
   assert.equal(byName(s, /^Neue Baustelle/)?.suppressAlarms, true);
@@ -318,6 +321,8 @@ await step("Erinnerungen: geteilte Kalender aus, eigene an; vom Nutzer wieder ei
   await new Promise(r => setTimeout(r, 5000));
   s = await snapshot(tb.m);
   assert.equal(byName(s, /^Montagetermine/).suppressAlarms, false, "Nutzereinstellung überschrieben");
+  assert.ok(s.calendars.filter(c => c.managed).every(c => c.refresh === 5), "vorhandene Kalender nicht auf 5 Minuten nachgezogen");
+  assert.ok(s.books.filter(b => b.managed).every(b => b.sync === 5), "vorhandene Adressbücher nicht auf 5 Minuten nachgezogen");
 });
 await stopThunderbird(tb);
 

@@ -135,3 +135,17 @@ test("reminders are left alone by default", () => {
   const r = plan({ remote: { calendars: [cal("x", { shared: true })], addressBooks: [] }, local: { calendars: [], addressBooks: [] } });
   assert.equal(r.actions[0].suppressAlarms, undefined);
 });
+
+test("polling interval is applied to managed calendars and address books", () => {
+  const r = plan({
+    remote: { calendars: [cal("a"), cal("b")], addressBooks: [book("c")] },
+    local: { calendars: [localCal("1", "a", { refreshMinutes: 30 }), localCal("2", "b", { refreshMinutes: 15 })], addressBooks: [{ uid: "u", url: `${S}/addressbooks/users/alice/c/`, name: "c", readOnly: false, syncMinutes: 30 }] },
+    options: { calendars: { refreshMinutes: 15 }, addressBooks: { syncMinutes: 15 } },
+  });
+  assert.deepEqual(r.actions.map(a => [a.id || a.uid, a.changes]), [["1", { refreshMinutes: 15 }], ["u", { syncMinutes: 15 }]]);
+});
+
+test("no interval configured: interval left alone", () => {
+  const r = plan({ remote: { calendars: [cal("a")], addressBooks: [] }, local: { calendars: [localCal("1", "a", { refreshMinutes: 30 })], addressBooks: [] } });
+  assert.deepEqual(r.actions, []);
+});

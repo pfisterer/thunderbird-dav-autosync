@@ -14,8 +14,8 @@ const DEFAULT_CONFIG = {
   usernameFrom: "login",
   profileId: "default",
   intervalMinutes: 15,
-  calendarRefreshMinutes: 30,
-  addressBookSyncMinutes: 30,
+  calendarRefreshMinutes: 15,
+  addressBookSyncMinutes: 15,
   cache: true,
   removeAfterMissing: 2,
   calendars: {},
@@ -129,7 +129,11 @@ async function sync(trigger) {
     }
 
     const local = await browser.davAutosync.listManaged(tag);
-    const options = mergeOptions({ calendars: config.calendars, addressBooks: config.addressBooks, removeAfterMissing: config.removeAfterMissing });
+    const options = mergeOptions({
+      calendars: { ...config.calendars, refreshMinutes: config.calendarRefreshMinutes },
+      addressBooks: { ...config.addressBooks, syncMinutes: config.addressBookSyncMinutes },
+      removeAfterMissing: config.removeAfterMissing,
+    });
     const result = plan({ remote, local, state: syncState, options });
     for (const w of result.warnings) {
       await log("warn", w);
@@ -170,7 +174,7 @@ async function execute(action, { tag, login, config }) {
       const i = action.item;
       const adopted = await api.adoptCalendar(i.url, login.username, tag);
       if (adopted) {
-        await api.updateCalendar(adopted, { name: i.name, color: i.color, readOnly: i.readOnly, ...(action.suppressAlarms ? { suppressAlarms: true } : {}) });
+        await api.updateCalendar(adopted, { name: i.name, color: i.color, readOnly: i.readOnly, refreshMinutes: config.calendarRefreshMinutes, ...(action.suppressAlarms ? { suppressAlarms: true } : {}) });
         await log("info", msg("logAdoptedCalendar", i.name));
         return;
       }
@@ -184,7 +188,7 @@ async function execute(action, { tag, login, config }) {
     const i = action.item;
     const adopted = await api.adoptAddressBook(i.url, login.username, tag);
     if (adopted) {
-      await api.updateAddressBook(adopted, { name: i.name, readOnly: i.readOnly });
+      await api.updateAddressBook(adopted, { name: i.name, readOnly: i.readOnly, syncMinutes: config.addressBookSyncMinutes });
       await log("info", msg("logAdoptedAddressBook", i.name));
       return;
     }
@@ -220,6 +224,9 @@ function describeChange(key, value) {
       return msg(value ? "changeReadOnly" : "changeWritable");
     case "enabled":
       return msg("changeEnabled");
+    case "refreshMinutes":
+    case "syncMinutes":
+      return msg("changeInterval", String(value));
     case "suppressAlarms":
       return msg(value ? "changeRemindersOff" : "changeRemindersOn");
     default:

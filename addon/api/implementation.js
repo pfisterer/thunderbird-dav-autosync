@@ -62,6 +62,7 @@ this.davAutosync = class extends ExtensionCommon.ExtensionAPI {
               readOnly: Boolean(c.readOnly),
               username: c.getProperty("username") || "",
               disabled: Boolean(c.getProperty("disabled")),
+              refreshMinutes: Number(c.getProperty("refreshInterval") ?? 30),
               autoDisabled: Boolean(c.getProperty("auto-enabled")),
             }));
           const addressBooks = MailServices.ab.directories
@@ -72,6 +73,7 @@ this.davAutosync = class extends ExtensionCommon.ExtensionAPI {
               name: d.dirName,
               readOnly: d.getBoolValue("readOnly", false),
               username: d.getStringValue("carddav.username", ""),
+              syncMinutes: d.getIntValue("carddav.syncinterval", 30),
             }));
           return { calendars, addressBooks };
         },
@@ -112,6 +114,10 @@ this.davAutosync = class extends ExtensionCommon.ExtensionAPI {
           }
           if ("readOnly" in changes) {
             calendar.readOnly = Boolean(changes.readOnly);
+          }
+          if ("refreshMinutes" in changes) {
+            // Thunderbird re-arms the refresh timer on this property change (CalCalendarManager).
+            calendar.setProperty("refreshInterval", String(changes.refreshMinutes));
           }
           if ("suppressAlarms" in changes) {
             calendar.setProperty("suppressAlarms", Boolean(changes.suppressAlarms));
@@ -189,6 +195,10 @@ this.davAutosync = class extends ExtensionCommon.ExtensionAPI {
           }
           if ("readOnly" in changes) {
             book.setBoolValue("readOnly", Boolean(changes.readOnly));
+          }
+          if ("syncMinutes" in changes) {
+            // CardDAVDirectory reschedules its sync timer when this value changes.
+            book.setIntValue("carddav.syncinterval", Number(changes.syncMinutes));
           }
         },
 
