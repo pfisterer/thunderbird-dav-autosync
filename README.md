@@ -44,7 +44,7 @@ The administrator decides when a new version reaches the clients: change the ver
     "ExtensionSettings": {
       "dav-autosync@e0bef3fb-e03d-4a07-90cb-afbe6f17613e": {
         "installation_mode": "force_installed",
-        "install_url": "https://github.com/pfisterer/thunderbird-dav-autosync/releases/download/v0.1.1/dav-autosync-0.1.1.xpi",
+        "install_url": "https://github.com/pfisterer/thunderbird-dav-autosync/releases/download/v0.1.2/dav-autosync-0.1.2.xpi",
         "updates_disabled": true
       }
     },
@@ -68,7 +68,7 @@ The administrator decides when a new version reaches the clients: change the ver
 }
 ```
 
-`install_url` can also point to a copy on a file share (`file://///server/share/dav-autosync-0.1.1.xpi` for `\\server\share\dav-autosync-0.1.1.xpi`) if the clients should not download from GitHub.
+`install_url` can also point to a copy on a file share (`file://///server/share/dav-autosync-0.1.2.xpi` for `\\server\share\dav-autosync-0.1.2.xpi`) if the clients should not download from GitHub.
 
 ### Automatic updates
 
@@ -93,7 +93,7 @@ Every release then reaches all clients without further action. Consider who can 
 Releases are built by GitHub Actions with a build provenance attestation:
 
 ```sh
-gh attestation verify dav-autosync-0.1.1.xpi --repo pfisterer/thunderbird-dav-autosync
+gh attestation verify dav-autosync-0.1.2.xpi --repo pfisterer/thunderbird-dav-autosync
 ```
 
 `SHA256SUMS` and the `update_hash` in `updates.json` give the checksum as well.

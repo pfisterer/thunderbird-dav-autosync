@@ -77,7 +77,7 @@ async function resetServer() {
 }
 
 // ---------- Thunderbird helpers ----------
-function writePolicies() {
+function writePolicies(credentialSource = "stored") {
   mkdirSync(DISTRIBUTION, { recursive: true });
   const base = { policies: { DisableAppUpdate: true, DisableTelemetry: true, OverrideFirstRunPage: "", OverridePostUpdatePage: "" } };
   base.policies.ExtensionSettings = { [ADDON_ID]: { installation_mode: "force_installed", install_url: `file://${XPI}` } };
@@ -85,7 +85,7 @@ function writePolicies() {
     Extensions: {
       [ADDON_ID]: {
         serverUrl: `${DAV}/`,
-        credentialSource: "stored",
+        credentialSource,
         removeAfterMissing: 2,
         calendars: { exclude: ["contact_birthdays"] },
         addressBooks: { exclude: ["z-*-generated--*"] },
@@ -266,6 +266,40 @@ await step("Offline-Cache umgeschaltet (Thunderbird baut den Kalender neu auf) �
   await requestSync();
   const s = await waitFor(tb.m, s => byName(s, /^Montagetermine/)?.managed, "Übernahme nach Neuaufbau");
   assert.equal(s.calendars.filter(c => /^Montagetermine/.test(c.name)).length, 1, "Duplikat nach Cache-Umschaltung");
+});
+await stopThunderbird(tb);
+
+// Anmeldung vom Mailkonto: IMAP-Konto mit gespeichertem Kennwort (hier gleich dem Nextcloud-Kennwort), DAV-Login veraltet.
+writePolicies("mail");
+tb = await startThunderbird();
+await step("Login vom Mailkonto übernommen, veraltetes DAV-Kennwort ersetzt, Abgleich läuft", async () => {
+  await tb.m.run(`
+    const { MailServices } = ChromeUtils.importESModule("resource:///modules/MailServices.sys.mjs");
+    const am = MailServices.accounts;
+    const server = am.createIncomingServer("alice", "imap.example.invalid", "imap");
+    const identity = am.createIdentity();
+    identity.email = "alice@example.invalid";
+    const account = am.createAccount();
+    account.incomingServer = server;
+    account.addIdentity(identity);
+    await Services.logins.initializationPromise;
+    const neu = (o, r, u, p) => { const l = Cc["@mozilla.org/login-manager/loginInfo;1"].createInstance(Ci.nsILoginInfo); l.init(o, null, r, u, p, "", ""); return l; };
+    await Services.logins.addLoginAsync(neu("imap://imap.example.invalid", "imap://imap.example.invalid", "alice", args.pw));
+    const [dav] = await Services.logins.searchLoginsAsync({ origin: args.origin, httpRealm: "Nextcloud" });
+    await Services.logins.modifyLoginAsync(dav, neu(args.origin, "Nextcloud", "alice", "veraltet"));`, { origin: NC, pw: pw("alice") });
+  await requestSync();
+  const deadline = Date.now() + 60000;
+  let davPw;
+  while (Date.now() < deadline) {
+    davPw = await tb.m.run(`await Services.logins.initializationPromise; const [l] = await Services.logins.searchLoginsAsync({ origin: args.origin, httpRealm: "Nextcloud" }); return l?.password;`, { origin: NC });
+    if (davPw === pw("alice")) {
+      break;
+    }
+    await new Promise(r => setTimeout(r, 1000));
+  }
+  assert.equal(davPw, pw("alice"), "DAV-Kennwort nicht vom Mailkonto übernommen");
+  const s = await snapshot(tb.m);
+  assert.ok(managedCals(s).length >= 5, "nach Übernahme kein Abgleich");
 });
 await stopThunderbird(tb);
 

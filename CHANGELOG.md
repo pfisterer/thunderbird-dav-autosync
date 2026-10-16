@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.1.2]
+
+- Fix: taking the login from the mail account (`credentialSource: "mail"`) never found the mail server on Thunderbird 153, because `nsIMsgIncomingServer.hostName` is now `hostname`.
+- Fix: updating a stored login after a password change failed on Thunderbird 153, which removed `modifyLogin`; now uses `modifyLoginAsync`.
+- End-to-end test covers the mail-account login path, including replacing an outdated DAV password.
+
 ## [0.1.1]
 
 - Build is now reproducible across machines: the XPI is written by `scripts/build.mjs` with uncompressed entries, fixed order, timestamps and attributes. Builds of 0.1.0 from macOS and Linux differed in their compressed data.

@@ -208,7 +208,7 @@ this.davAutosync = class extends ExtensionCommon.ExtensionAPI {
           const updated = newLoginInfo(origin, realm, username, password);
           if (existing) {
             if (existing.password !== password) {
-              Services.logins.modifyLogin(existing, updated);
+              await Services.logins.modifyLoginAsync(existing, updated);
             }
           } else {
             await Services.logins.addLoginAsync(updated);
@@ -222,15 +222,17 @@ this.davAutosync = class extends ExtensionCommon.ExtensionAPI {
             if (!server || !["imap", "pop3"].includes(server.type)) {
               continue;
             }
-            if (host && server.hostName.toLowerCase() !== host.toLowerCase()) {
+            // nsIMsgIncomingServer.hostName was renamed to hostname; support both.
+            const hostname = server.hostname ?? server.hostName;
+            if (host && hostname.toLowerCase() !== host.toLowerCase()) {
               continue;
             }
             const scheme = server.type === "pop3" ? "mailbox" : "imap";
-            const logins = await Services.logins.searchLoginsAsync({ origin: `${scheme}://${server.hostName}` });
+            const logins = await Services.logins.searchLoginsAsync({ origin: `${scheme}://${hostname}` });
             const login = logins.find(l => l.username === server.username);
             if (login) {
               return {
-                host: server.hostName,
+                host: hostname,
                 username: server.username,
                 password: login.password,
                 email: account.defaultIdentity?.email || "",
